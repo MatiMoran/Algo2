@@ -1,0 +1,22 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------------< aed:labo4 >------------------------------
+[INFO] Building labo4 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.10:prepare-agent (jacoco-initialize) @ labo4 ---
+[INFO] argLine set to -javaagent:/home/sdandois/.m2/repository/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=/tmp/tmppcyi32_0/target/jacoco.exec
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ labo4 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /tmp/tmppcyi32_0/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ labo4 ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 4 source files to /tmp/tmppcyi32_0/target/classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.124 s
+[INFO] Finished at: 2023-11-09T13:19:17-03:00
+[INFO] ------------------------------------------------------------------------

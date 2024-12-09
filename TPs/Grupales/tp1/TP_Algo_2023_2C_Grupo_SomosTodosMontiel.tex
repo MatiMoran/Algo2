@@ -1,0 +1,1687 @@
+\documentclass[10pt,a4paper]{article}
+
+\input{AEDmacros}
+\usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+
+\usepackage{amsmath}%
+\usepackage{MnSymbol}%
+\usepackage[utf8]{inputenc}
+
+\titulo{TP N°1: Especificaci\'on y WP}
+\subtitulo{“Elecciones Nacionales”}
+
+\fecha{17 de septiembre de 2023}
+
+\materia{Algoritmos y Estructuras de Datos}
+\grupo{SomosTodosMontiel}
+
+\integrante{Borgoglio, Maximiliano}{1341/21}{borgogliom@gmail.com}
+\integrante{Moran, Matias}{806/19}{matiec52000@hotmail.com}
+\integrante{Recio, Santiago}{1284/21}{santiagorecio23@gmail.com}
+\integrante{Solari Lenardon, Tadeo}{673/23}{tadebsl@gmail.com}
+
+% Declaramos donde van a estar las figuras
+% No es obligatorio, pero suele ser comodo
+\graphicspath{{../static/}}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Especificación}
+
+\subsection{Ejercicio 1} 
+
+\textbf{hayBallotage}: verifica si hay ballotage en la elección presidencial.
+
+\begin{proc}{hayBallotage}{\In escrutinio: \TLista{\ent}}{Bool}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ escrutinio: es la cantidad de votos de cada partido a nivel nacional para la elección presidencial.
+
+\quad $\filledsquare$ devuelve verdadero sii hay ballotage en la elección presidencial.
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{hayBallotage}{\In escrutinio : \TLista{\ent}}{Bool} 
+	\requiere{esEscrutinioPresidencialValido(escrutinio)}
+	\asegura{res = true \Iff \neg hayGanador(escrutinio)}
+\end{proc}
+
+\vspace{0.3cm}
+\pred{esEscrutinioPresidencialValido}{\In s: \TLista{\ent}}
+{|s| \geq 2 \wedge noHayEmpate(s) \wedge  todosPositivos(s)}
+
+\vspace{0.3cm}
+\pred{noHayEmpate}{\In s: \TLista{\ent}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j \leq |s| - 2 \implicaLuego (s[i] = s[j] \Iff i = j)}}
+
+\vspace{0.3cm}
+\pred{todosPositivos}{\In s: \TLista{\ent}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |s| - 1 \implicaLuego (s[i] \geq 0)}}
+
+\vspace{0.3cm}
+\pred{hayGanador}{\In s: \TLista{\ent}}{\existe[unalinea]{i}{\ent}{
+	0 \leq i \leq |s| - 2 \yLuego esGanador(s,i)
+}}
+
+\vspace{0.3cm}
+\pred{esGanador}{\In s: \TLista{\ent}, i: \ent}{
+	esMaximo(s,i) \wedge (tieneMasDe45(s,i) \lor tieneMasDe40YSaca10Puntos(s,i))
+}
+
+\vspace{0.3cm}
+\pred{esMaximo}{\In s: \TLista{\ent}, i: \ent}
+{\paraTodo[unalinea]{j}{\ent}{(0 \leq j \leq |s| - 2 \wedge j \neq i) \implicaLuego s[j] < s[i]}}
+
+\vspace{0.3cm}
+\pred{tieneMasDe45}{\In s: \TLista{\ent}, i: \ent}{
+	porcentajeDeVotos(s,i) > 0.45
+}
+
+\vspace{0.3cm}
+\pred{tieneMasDe40YSaca10Puntos}{\In s: \TLista{\ent}, i: \ent}{
+	porcentajeDeVotos(s,i) > 0.40 \wedge saca10Puntos(s,i)
+}
+
+\vspace{0.3cm}
+\aux{porcentajeDeVotos}{\In s: \TLista{\ent}, i: \ent}{\float}
+{\frac{s[i]}{votosTotales(s)}}
+
+\vspace{0.3cm}
+\aux{votosTotales}{\In s: \TLista{\ent}}{\ent}
+{\sum_{k=0}^{|s| - 1} s[k]}
+
+\vspace{0.3cm}
+\pred{saca10Puntos}{\In s: \TLista{\ent}, i: \ent}
+{\paraTodo[unalinea]{j}{\ent}{(0 \leq j \leq |s| - 2 \wedge j \neq i) \implicaLuego porcentajeDeVotos(s,i) - porcentajeDeVotos(s,j) > 0.1}}
+
+\pagebreak
+
+
+
+
+
+
+
+\subsection{Ejercicio 2} 
+
+\textbf{hayFraude}: verifica que los votos válidos de los tres tipos de cargos electivos sumen lo mismo.
+
+\begin{proc}{hayFraude}{\In escrutinio\_presidencial : \TLista{\ent}, \In escrutinio\_senadores : \TLista{\ent}, \In escrutinio\_diputados : \TLista{\ent}}{Bool}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ los tres escrutinios son a nivel nacional
+
+\quad $\filledsquare$ devuelve verdadero sii hay al menos dos escrutinios con diferente cantidad de votos
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{hayFraude}{\In esPres : \TLista{\ent}, \In esSen : \TLista{\ent}, \In esDip : \TLista{\ent}}{Bool} 
+	\requiere{esEscrutinioPresidencialValido(esPres) \wedge
+	\newline
+	esEscrutinioSenadoresValido(esSen) \wedge
+	\newline
+	esEscrutinioDiputadosValido(esDip) \wedge
+	\newline
+	|esPres| = |esSen| \wedge |esSen| = |esDip|}
+	\asegura{res = false \Iff coincidenVotos(esPres, esSen, esDip)}
+\end{proc}
+
+\vspace{0.3cm}
+\pred{esEscrutinioSenadoresValido}{\In s: \TLista{\ent}}{|s| \geq 3 \wedge noHayEmpate(s) \wedge  todosPositivos(s)}
+
+\vspace{0.3cm}
+\pred{esEscrutinioDiputadosValido}{\In s: \TLista{\ent}}{|s| \geq 2 \wedge noHayEmpate(s) \wedge  todosPositivos(s)}
+
+\vspace{0.3cm}
+\pred{coincidenVotos}{\In s1 : \TLista{\ent}, \In s2 : \TLista{\ent}, \In s3 : \TLista{\ent}}{votosTotales(s1) = votosTotales(s2)  \wedge votosTotales(s2) = votosTotales(s3)}
+
+\pagebreak
+
+
+
+
+
+\subsection{Ejercicio 3} 
+
+\textbf{obtenerSenadoresEnProvincia}: obtiene los id de los partidos (primero y segundo) para la elección de senadores en una provincia
+
+\begin{proc}{obtenerSenadoresEnProvincia}{\In escrutinio : \TLista{\ent}}{$\ent \times \ent$}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ escrutinio: es la cantidad de votos de cada partido en la provincia
+
+\quad $\filledsquare$ devuelve una tupla que contiene el id de los dos partidos con mayor cantidad de votos.
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{obtenerSenadoresEnProvincia}{\In escrutinio : \TLista{\ent}}{$\ent \times \ent$} 
+	\requiere{esEscrutinioSenadoresValido(escrutinio)}
+	\asegura{ esMaximo(escrutinio, res_{0}) \wedge esSegundo(escrutinio, res_{1})}
+\end{proc}
+
+
+\vspace{0.3cm}
+\pred{esSegundo}{\In s: \TLista{\ent}, i: \ent}
+{\paraTodo[unalinea]{j}{\ent}{(0 \leq j \leq |s| - 2 \wedge j \neq i \wedge \neg esMaximo(s,j)) \implicaLuego s[j] < s[i]}}
+
+\pagebreak
+
+
+
+
+
+
+\subsection{Ejercicio 4} 
+
+\textbf{calcularDHondtEnProvincia}: calcula los cocientes según el método d`Hondt para diputados en una provincia (im-
+portante: no es necesario ordenar los partidos por cantidad de votos)
+
+\begin{proc}{calcularDHondtEnProvincia}{\In cant\_Bancas : \ent , \In escrutinio : \TLista{\ent}}{\TLista{\TLista{\ent}}}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ cant\_bancas: es la cantidad de bancas en disputa en la provincia
+
+\quad $\filledsquare$ escrutinio: es la cantidad de votos de cada partido en la provincia
+
+\quad $\filledsquare$ devuelve la matriz de dimensión $\#$ partidos $\times$ $\#$ cocientes de los cocientes del método d`Hondt
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{calcularDHondtEnProvincia}{\In cant\_Bancas : \ent , \In escrutinio : \TLista{\ent}}{\TLista{\TLista{\ent}}} 
+	\requiere{cantidadDeBancasValida(cant\_Bancas) \wedge 
+	\newline
+	esEscrutinioDiputadosValido(escrutinio) \wedge 
+	\newline
+	|escrutinio| \geq cant\_Bancas + 1 \wedge 
+	\newline
+	generaDHondtValidoSinDuplicados(cant\_Bancas, escrutinio)
+	}
+	\asegura{esDHondtDe(cant\_Bancas, escrutinio, res)}
+\end{proc}
+
+\vspace{0.3cm}
+\pred{cantidadDeBancasValida}{cantBancas: \ent}
+{cantBancas \geq 1}
+
+\vspace{0.3cm}
+\pred{generaDHondtValidoSinDuplicados}{\In b : \ent , \In s : \TLista{\ent}}
+{\paraTodo[unalinea]{i,j,k,l}{\ent}{(0 \leq i,k \leq |s| - 2  \wedge 0 \leq j,l \leq b - 1) \implicaLuego (\lfloor s[i]/j \rfloor = \lfloor s[k]/l \rfloor \Iff i = k \wedge j = l)}}
+
+\vspace{0.3cm}
+\pred{esDHondtDe}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}}
+{
+	esMatrizDeDimension(dHondt, |s| - 1, b) \yLuego todosCocientesDeDhondt(b,s,dHondt)
+}
+
+\vspace{0.3cm}
+\pred{esMatrizDeDimension}{\In m: \TLista{\TLista{\ent}}, \In filas: \ent, \In columnas: \ent}
+{|m| = filas \wedge \paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |m| - 1 \implicaLuego |m[i]| = columnas}}
+
+\vspace{0.3cm}
+\pred{todosCocientesDeDhondt}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}}
+{\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i \leq |s| - 2  \wedge 0 \leq j \leq b - 1) \implicaLuego (dHondt[i][j] = \lfloor s[i]/j \rfloor)}}
+
+\pagebreak
+
+
+
+
+
+
+\subsection{Ejercicio 5} 
+
+\textbf{calcularDHondtEnProvincia}: calcula la cantidad de bancas de diputados obtenidas por cada partido en una
+provincia.
+
+\begin{proc}{obtenerDiputadosEnProvincia}{\In cant\_Bancas : \ent, \In escrutinio : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}}{\TLista{\ent}}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ cant\_bancas: es la cantidad de bancas en disputa en la provincia
+
+\quad $\filledsquare$ escrutinio: es la cantidad de votos de cada partido en la provincia
+
+\quad $\filledsquare$ dHondt: es la matriz de dimensión $\#$ partidos $\times$ $\#$ cocientes de los cocientes del método dHondt.
+
+\quad $\filledsquare$ devuelve la cantidad de bancas obtenidas por cada partido
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{obtenerDiputadosEnProvincia}{\In cant\_Bancas : \ent, \In escrutinio : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}}{\TLista{\ent}} 
+	\requiere{cantidadDeBancasValida(cant\_Bancas) \wedge
+	\newline
+	esEscrutinioDiputadosValido(escrutinio) \wedge
+	\newline
+	esDHondtDe(cant\_Bancas, escrutinio, dHondt)
+	\newline
+	}
+	\asegura{esResultadosDHondt(cant\_Bancas, listas, dHondt, res)}
+\end{proc}
+
+\vspace{0.3cm}
+\pred{esResultadosDHondt}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In res : \TLista{\ent}}
+{|res| = |s| - 1 \yLuego sonTodosResultadosDeDHondt(b, s, dHondt, res)}
+
+\vspace{0.3cm}
+\pred{sonTodosResultadosDeDHondt}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In res : \TLista{\ent}}
+{\paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |res| - 1 \implicaLuego esCantidadDeBancasGanadas(b, s, dHondt, i, res[i])}}
+
+\vspace{0.3cm}
+\pred{esCantidadDeBancasGanadas}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In indiceDePartido : \ent, \In cantidadDeBancasGanadas : \ent}
+{cantidadDeBancasGanadas =  cantidadDeVecesQuePartidoGanoUnaBanca(b, s, dHondt, indiceDePartido)}
+
+\vspace{0.3cm}
+\aux{cantidadDeVecesQuePartidoGanoUnaBanca}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In indiceDePartido : \ent}{\ent}
+{\sum_{k=1}^{b} \IfThenElse{partidoGanoLaIesimaBanca(b, s, dHondt, indiceDePartido, k)}{1}{0} }
+
+\vspace{0.3cm}
+\pred{partidoGanoLaIesimaBanca}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In indiceDePartido : \ent, \In numeroDeBanca : \ent}
+{partidoSuperaUmbral(s, indiceDePartido) \wedge 
+\newline
+partidoTieneElIesimoMaximoEnMatriz(b, s, dHondt, indiceDePartido, k)}
+
+\vspace{0.3cm}
+\pred{partidoSuperaUmbral}{\In s: \TLista{\ent}, \In indiceDePartido : \ent}
+{votosTotales(s,i) > 0.03}
+
+\vspace{0.3cm}
+\pred{partidoTieneElIesimoMaximoEnMatriz}{\In b : \ent, \In s : \TLista{\ent}, \In dHondt : \TLista{\TLista{\ent}}, \In indiceDePartido : \ent, \In iesimoMaximo : \ent}
+{\existe[unalinea]{j}{\ent}{0 \leq j \leq b - 1 \yLuego 
+\newline
+cantidadDeMayoresEnMatriz(b, s, dHondt, dHondt[indiceDePartido, j]) = iesimoMaximo - 1 }}
+
+\vspace{0.3cm}
+\aux{cantidadDeMayoresEnMatriz}{\In columnas : \ent, \In filas : \TLista{\ent}, \In matriz : \TLista{\TLista{\ent}}, \In valor : \ent}{\ent}
+{
+	\newline
+	\sum_{i=0}^{filas - 1} \sum_{j=0}^{columnas - 1} \IfThenElse{matriz[i][j] > valor}{1}{0} }
+
+\pagebreak
+
+
+
+
+
+
+
+\subsection{Ejercicio 6} 
+
+\textbf{validarListasDiputadosEnProvincia}: verifica que la listas de diputados de cada partido en una provincia contenga
+exactamente la misma cantidad de candidatos que bancas en disputa en esa provincia, y que además se cumpla la
+alternancia de géneros.
+
+\begin{proc}{validarListasDiputadosEnProvincia}{\In cant\_Bancas : \ent, \In listas : \TLista{\TLista{ dni : \ent \times genero : \ent }}}{Bool}
+\end{proc}
+
+Donde:
+
+\quad $\filledsquare$ cant\_bancas: es la cantidad total de bancas en disputa en la provincia
+
+\quad $\filledsquare$ listas: son las listas de diputados de cada partido. Cada candidato/a está representado/a con una tupla que contiene el dni y el género.
+
+\quad $\filledsquare$ devuelve verdadero sii las listas de todos los partidos: 1) presentan la cantidad correcta de candidatos, y 2) verifican
+la alternancia de género.
+
+\vspace{0.3cm}
+\vspace{0.3cm}
+
+\begin{proc}{validarListasDiputadosEnProvincia}{\In cant\_Bancas : \ent, \In listas : \TLista{\TLista{ dni : \ent \times genero : \ent }}}{Bool} 
+	\requiere{cantidadDeBancasValida(cant\_Bancas)}
+	\asegura{res = true \Iff sonListasValidas(cant\_Bancas, listas)}
+\end{proc}
+
+\vspace{0.3cm}
+\pred{sonListasValidas}{\In cantBancas : \ent , listas: \TLista{\TLista{ dni : \ent \times genero : \ent }}}
+{|listas| >= 1 \wedge \paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |listas| - 1 \implicaLuego esListaAlternadaValida(cantBancas, listas[i])}}
+
+\vspace{0.3cm}
+\pred{esListaAlternadaValida}{\In cantBancas : \ent , lista: \TLista{ dni : \ent \times genero : \ent }}
+{esListaValida(cantBancas, lista) \yLuego esListaAlternada(lista)}
+
+\vspace{0.3cm}
+\pred{esListaValida}{\In cantBancas : \ent , \In lista: \TLista{ dni : \ent \times genero : \ent }}
+{|listas| = cantBancas \wedge \paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |lista| - 1 \implicaLuego (esPersonaValida(lista[i]))}}
+
+\vspace{0.3cm}
+\pred{esPersonaValida}{\In persona : $ ( dni : \ent \times genero : \ent ) $}
+{esDniValido(persona_{0}) \wedge esGeneroValido(persona_{1})}
+
+\vspace{0.3cm}
+\pred{esDniValido}{\In dni : \ent}
+{dni > 0}
+
+\vspace{0.3cm}
+\pred{esGeneroValido}{\In genero : \ent}
+{genero = 1 \vee genero = 2}
+
+\vspace{0.3cm}
+\pred{esListaAlternada}{lista: \TLista{ dni : \ent \times genero : \ent }}
+{\paraTodo[unalinea]{i}{\ent}{0 \leq i \leq |lista| - 2 \implicaLuego lista[i]_{1} \neq lista[i+1]_{1}}}
+
+\pagebreak
+
+
+
+
+
+
+
+
+\section{Implementación}
+
+Proponer algoritmos para todos los problemas, excepto para \textbf{calcularDHondtEnProvincia} y 
+
+\textbf{obtenerDiputadosEnProvincia}
+
+
+
+\subsection{candidatosMaximos}
+\begin{lstlisting}
+maximo := 0;
+subMaximo := 0;
+if(escrutinio[1] > escrutinio[0]) then
+    maximo := 1;
+else
+    subMaximo := 1;
+endif
+i:=2;
+while (i < |escrutinio| - 1) do
+	if (escrutinio[i] > escrutinio[subMaximo]) then
+		subMaximo := i;
+	else
+		skip;
+	endif
+	if (escrutinio[i] > escrutinio[maximo]) then
+	    subMaximo := maximo;
+	    maximo := i;
+	else
+		skip;
+	endif
+	i := i + 1;
+endwhile
+result := (maximo, subMaximo);
+\end{lstlisting}
+
+\subsection{votosTotales}
+\begin{lstlisting}
+votosTotales := 0;
+i := 0;
+while (i < |escrutinio|) do
+	votosTotales:= votosTotales + escrutinio[i];
+	i := i + 1
+endwhile
+result:= votosTotales;
+\end{lstlisting}
+
+
+
+\subsection{hayBallotage}
+\begin{lstlisting}
+ganador := candidatosMaximos(escrutinio)[0];
+subGanador := candidatosMaximos(escrutinio)[1];
+votosTotales := votosTotales(escrutinio);
+porcGanador := (escrutinio[ganador] / votosTotales ) * 100;
+porcSubGanador := (escrutinio[subganador] / votosTotales ) * 100;
+if ((porcGanador > 45) || (porcGanador > 40 && ( porcGanador - porcSubganador >= 10 ))) then
+    result := false 
+else 
+	result := true
+endIf
+\end{lstlisting}
+\pagebreak
+
+
+\subsection{hayfraude}
+\begin{lstlisting}
+votosPres := 0;
+votosSen := 0;
+votosDip := 0;
+i := 0;
+while(i < |escrutinio|) do 
+    votosPres := votosPres + escrutinio_presidencial[i];
+    votosSen := votosSen + escrutinio_senadores[i];
+    votosDip := votosDip + escrutinio_diputados[i];
+    i := i+1;
+endwhile
+result := neg (votosPres = votosSen && votosSen = votosDip)
+\end{lstlisting}
+*aclaramos que neg es $\neg$
+
+\pagebreak
+
+
+\subsection{obtenerSenadoresEnProvincia}
+\begin{lstlisting}
+candidato := 0;
+subCandidato := 0;
+if(escrutinio[1] > escrutinio[0]) then
+    candidato :=  1;
+else
+    subCandidato := 1;
+endif
+i:=2;
+while (i < |escrutinio| - 1) do
+	if (escrutinio[i] > escrutinio[subCandidato]) then
+		subCandidato := i;
+	else
+		skip;
+	endif
+	if (escrutinio[i] > escrutinio[candidato]) then
+	    subCandidato := candidato;
+	    candidato := i;
+	else
+		skip;
+	endif
+	i := i + 1;
+endwhile
+result := (candidato, subCandidato);
+\end{lstlisting}
+\pagebreak
+
+
+
+
+\subsection{validarListaDisputadosPorProvincia}
+\begin{lstlisting}
+res := true;
+i := 0;
+while (i < |listas|) do
+    if(|listas[i]| != cant_bancas) then
+        res := false;
+    else
+		k := 0;
+        while(k < |listas[i]| - 1) do
+            if (listas[i][k]_1 = listas[i][k+1]_1) then
+                res:= false;
+			else
+				skip;
+            endif
+        k := k+1;
+        endwhile
+i := i+1;
+endwhile
+\end{lstlisting} 
+aclaramos que \_ es la operacion del subindice: $listas[i][k]_{1}$
+\pagebreak
+
+
+\section{Demostración}
+
+Demostrar la correctitud de los algoritmos propuestos para los problemas \textbf{obtenerSenadoresEnProvincia} y 
+
+\textbf{hayFraude} mediante el método de \textit{weakest precondition (WP)}.
+
+\subsection{hayFraude}
+
+\textbf{hayFraude} tiene la siguiente especificación:
+
+\begin{proc}{hayFraude}{\In esPres : \TLista{\ent}, \In esSen : \TLista{\ent}, \In esDip : \TLista{\ent}}{Bool} 
+	\requiere{esEscrutinioPresidencialValido(esPres) \wedge
+	\newline
+	esEscrutinioSenadoresValido(esSen) \wedge
+	\newline
+	esEscrutinioDiputadosValido(esDip) \wedge
+	\newline
+	|esPres| = |esSen| \wedge |esSen| = |esDip|}
+	\asegura{res = false \Iff coincidenVotos(esPres, esSen, esDip)}
+\end{proc}
+
+\textbf{hayFraude} tiene la siguiente implementación:
+
+\begin{lstlisting}
+votosPres := 0;
+votosSen := 0;
+votosDip := 0;
+i := 0;
+while(i < |escrutinio|) do 
+    votosPres := votosPres + escrutinio_presidencial[i];
+    votosSen := votosSen + escrutinio_senadores[i];
+    votosDip := votosDip + escrutinio_diputados[i];
+    i := i+1;
+endwhile
+result := neg (votosPres = votosSen && votosSen = votosDip)
+\end{lstlisting}
+\vspace{0.2cm}
+    * Aclaramos que neg es ¬
+
+\vspace{0.3cm}
+
+Por la implementación, tenemos un esquema del algoritmo de esta manera:
+
+\vspace{0.3cm}
+    \{\textbf{Pre}\}  S1  \{\textbf{Pc}\}  S  \{\textbf{Qc}\}  S2  \{\textbf{Post}\}
+
+\vspace{0.3cm}
+    Por lo que vamos a desarrollar la siguiente estrategia:
+
+\vspace{0.3cm}
+    \begin{enumerate}
+    	\item $Pre \implies wp(S1, Pc)$
+    	\item {\{Pc\}}  C  {\{Qc\}}    (Teorema del Invariante)
+    	\item $Qc \implies  wp(S2, Post)$
+    \end{enumerate}
+
+\vspace{0.3cm}
+    Por Corolario de Monotonía, nos quedaría:
+
+	\vspace{0.3cm}
+	$\quad Pre \implies wp(S1; C; S2, Post) \quad \equiv \quad {\{Pc\}}  \quad S \quad {\{Qc\}}$
+
+\vspace{0.3cm}
+    Comenzamos con el item 3.
+
+\vspace{0.3cm}
+   $Post \quad \equiv \quad res = false \Iff coincidenVotos(escPres, escSen, escDip)$
+
+\vspace{0.2cm}
+    $\equiv \quad res = false \Iff (votosTotales(escPres) = votosTotales(escSen)  \wedge votosTotales(escSen) = votosTotales(escDip))$
+
+\vspace{0.2cm}
+    $\equiv \quad res = false \Iff ( \sum_{j=0}^{|escPres| - 1} escPres[j] = \sum_{j=0}^{|escSen| - 1} escSen[j] \wedge \sum_{j=0}^{|escSen| - 1} escSen[j] = \sum_{j=0}^{|escDip| - 1} escDip[j] )$
+
+\vspace{0.5cm}
+    $\quad wp(S2, Post) \equiv wp(res = \neg(votosPres = votosSen \wedge votosSen = votosDip), Post)$
+
+\vspace{0.3cm}
+    $\equiv \quad def(\neg(votosPres = votosSen \wedge votosSen = votosDip)) \quad \yLuego \quad Post^{res}_{\neg(votosPres = votosSen \quad \wedge \quad votosSen = votosDip)}$
+
+\vspace{0.3cm} 
+$\equiv \quad True \quad \yLuego \quad Post^{res}_{\neg(votosPres = votosSen \quad \wedge \quad votosSen = votosDip)}$
+
+\vspace{0.3cm} 
+$\equiv \quad Post^{res}_{\neg(votosPres = votosSen \quad \wedge \quad votosSen = votosDip)}$
+
+\vspace{0.3cm} 
+    $Post \quad \equiv \quad \neg(votosPres = votosSen \wedge votosSen = votosDip) = false \Iff 
+	\newline
+	( \sum_{j=0}^{|escPres| - 1} escPres[j] = \sum_{j=0}^{|escSen| - 1} escSen[j] \wedge \sum_{j=0}^{|escSen| - 1} escSen[j] = \sum_{j=0}^{|escDip| - 1} escDip[j] )$
+
+\vspace{0.6cm}
+    Ahora debemos ver si Qc $\Rightarrow$ wp(s2,Post). Para eso, pedimos que Qc sea exactamente wp(s2,Post).
+
+\pagebreak
+
+
+\vspace{0.6cm}
+    Continuamos con el item 2, El ciclo.
+	\vspace{0.3cm}
+    
+    $Pc \quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge votosDip = 0 \wedge i=0 \wedge Pre$
+	
+	\vspace{0.3cm}
+    Debido al largo de la Precondición, y sumado al hecho de que no aporta información de utilidad, decidimos dejarlo como Pre a lo largo de la demostración.
+
+	\vspace{0.3cm}
+	Definimos el siguiente invariante y vamos a demostrar la demostración parcial del ciclo
+
+\vspace{0.3cm}
+    $Qc \quad \equiv \quad \neg(votosPres = votosSen \wedge votosSen = votosDip) = false \Iff 
+	\newline
+	( \sum_{j=0}^{|escPres| - 1} escPres[j] = \sum_{j=0}^{|escSen| - 1} escSen[j] \wedge \sum_{j=0}^{|escSen| - 1} escSen[j] = \sum_{j=0}^{|escDip| - 1} escDip[j] )$
+
+\vspace{0.3cm}
+    $I \quad \equiv \quad 0 \leq i \leq |escPres| 
+	\wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i - 1} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i - 1} escSen[j]
+    \wedge votosDip =  \sum_{j=0}^{i - 1} escDip[j]$
+
+\vspace{0.3cm}
+    $B \quad \equiv \quad i < |escPres| $
+
+
+\vspace{1.2cm}
+    ${Pc} \implies  {I}$
+
+	queremos ver que:
+
+	$votosPres = 0 \wedge votosSen = 0 \wedge votosDip = 0 \wedge i=0 \wedge Pre \implies {I}$
+
+$i=0 \implies 0 \leq i \leq |escPres|$
+
+$i = 0 \quad \wedge \quad votosPres = 0 \quad \implies \quad votosPres = \sum_{j=0}^{0 - 1} escPres[j] \quad \equiv \quad 0 = 0 \quad \equiv \quad True$
+
+$i = 0 \quad \wedge \quad votosSen = 0 \quad \implies \quad votosSen = \sum_{j=0}^{0 - 1} escSen[j] \quad \equiv \quad 0 = 0 \quad \equiv \quad True$
+
+$i = 0 \quad \wedge \quad votosDip = 0 \quad \implies \quad votosDip = \sum_{j=0}^{0 - 1} escDip[j] \quad \equiv \quad 0 = 0 \quad \equiv \quad True$
+
+\vspace{0.3cm}
+Asi comprobamos que ${Pc} \implies  {I}$
+
+\vspace{1.2cm}
+    $ I \wedge \neg B  \Rightarrow Qc $
+	
+	queremos ver que:
+	
+	$ I \wedge \neg B \implies \neg(votosPres = votosSen \wedge votosSen = votosDip) = false \Iff 
+	\newline
+	( \sum_{j=0}^{|escPres| - 1} escPres[j] = \sum_{j=0}^{|escSen| - 1} escSen[j] \wedge \sum_{j=0}^{|escSen| - 1} escSen[j] = \sum_{j=0}^{|escDip| - 1} escDip[j] ) $
+
+
+\vspace{0.6cm}
+Por I, tenemos que: 
+
+\vspace{0.3cm}
+$I \implies votosPres = \sum_{j=0}^{i-1} escPres[j]$
+
+$I \implies votosSen = \sum_{j=0}^{i-1} escSen[j]$
+
+$I \implies votosDip =  \sum_{j=0}^{i-1} escDip[j]$
+
+$I \implies |escPres| = |escSen| \wedge |escSen| = |escDip|$
+
+\vspace{0.3cm}
+con lo cual podriamos reemplazar las variables votos con las sumatorias y cada limite superior de cada sumatoria con el mismo valor $|escPres|$ y nos quedaria asi:
+
+\vspace{0.3cm}
+$ I \wedge \neg B \implies \neg( \sum_{j=0}^{i - 1} escPres[j] = \sum_{j=0}^{i - 1} escSen[j] \wedge \sum_{j=0}^{i - 1} escSen[j] = \sum_{j=0}^{i - 1} escDip[j] ) = false \Iff 
+\newline
+( \sum_{j=0}^{|escPres| - 1} escPres[j] = \sum_{j=0}^{|escPres| - 1} escSen[j] \wedge \sum_{j=0}^{|escPres| - 1} escSen[j] = \sum_{j=0}^{|escPres| - 1} escDip[j] ) $
+
+\vspace{0.6cm}
+Por otro lado, tenemos:
+
+\vspace{0.3cm}
+$I \implies 0 \leq i \leq |escPres|$ 
+
+$\neg B \implies \neg (i < |escPres|) \equiv i \geq |escPres|$
+
+\vspace{0.3cm}
+Por lo que:
+
+\vspace{0.3cm}
+$I \wedge \neg B \implies (0 \leq i \leq |escPres|) \wedge (i \geq |escPres|) \equiv i = |escPres|$
+
+\vspace{0.3cm}
+De este modo reemplazando i con $|escPres|$, Qc quedaría:
+
+\vspace{0.3cm}
+$ I \wedge \neg B \implies \neg( \sum_{j=0}^{i - 1} escPres[j] = \sum_{j=0}^{i - 1} escSen[j] \wedge \sum_{j=0}^{i - 1} escSen[j] = \sum_{j=0}^{i - 1} escDip[j] ) = false \Iff 
+\newline
+( \sum_{j=0}^{i - 1} escPres[j] = \sum_{j=0}^{i - 1} escSen[j] \wedge \sum_{j=0}^{i - 1} escSen[j] = \sum_{j=0}^{i - 1} escDip[j] ) $
+
+\vspace{0.3cm}
+Así, tendríamos algo de la forma $\neg a = false \iff a$ , que siempre es verdadero, y asi comprobamos que 
+$ I \wedge \neg B \implies Qc$
+\pagebreak
+
+
+
+
+\vspace{1.2cm}
+$ \{I \wedge B\}  Sc  \{I\}$
+	
+	Queremos ver que:
+	
+	$ I \wedge B \implies wp(Sc, I) \quad \equiv wp(s6;s7;s8;s9, I)\quad \equiv \quad wp(s6, wp(s7, wp(s8, wp(s9, I))))$
+
+
+\vspace{0.6cm}
+    Llamamos $E_1 \equiv wp(s9, I) \equiv wp(i = i+1, I)$
+    
+	\vspace{0.3cm}
+	$\equiv def(i+1) \yLuego I^{i}_{i+1}$
+
+	\vspace{0.3cm}
+    $\equiv True \quad \yLuego \quad 0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip =  \sum_{j=0}^{i} escDip[j]
+	$
+	
+	\vspace{0.3cm}
+    $\equiv 0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip =  \sum_{j=0}^{i} escDip[j]
+	$
+
+\vspace{0.6cm}
+    Llamamos $E_2 \equiv wp(s8, E_1) \equiv wp(votosDip = votosDip + escDip[i], E_1)$
+    
+	\vspace{0.3cm}
+	$\equiv def(votosDip + escDip[i]) \yLuego (E_1)^{votosDip}_{votosDip + escDip[i]}$
+
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip =  \sum_{j=0}^{i} escDip[j])^{votosDip}_{votosDip + escDip[i]}
+	$
+	
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+
+\vspace{0.6cm}
+    Llamamos $E_3 \equiv wp(s7, E_2) \equiv wp(votosSen = votosSen + escSen[i], E_2)$
+    
+	\vspace{0.3cm}
+	$\equiv def(votosSen + escSen[i]) \yLuego (E_2)^{votosSen}_{votosSen + escSen[i]}$
+	
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escSen|) \quad \yLuego \quad
+	(0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])^{votosSen}_{votosSen + escSen[i]}
+	$
+	
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escSen|) \quad \yLuego \quad
+	(0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+
+\vspace{0.6cm}
+    Llamamos $E_4 \equiv wp(s6, E_3) \equiv wp(votosPres = votosPres + escPres[i], E_3)$
+    
+	\vspace{0.3cm}
+	$\equiv def(votosPres + escPres[i]) \yLuego (E_3)^{votosPres}_{votosPres + escPres[i]}$
+
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escPres|) \quad \yLuego \quad
+	(0 \leq i \leq |escSen|) \quad \yLuego \quad
+	(0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])^{votosPres}_{votosPres + escPres[i]}
+	$
+	
+	\vspace{0.3cm}
+    $\equiv (0 \leq i \leq |escPres|) \quad \yLuego \quad
+	(0 \leq i \leq |escSen|) \quad \yLuego \quad
+	(0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+    
+\vspace{0.6cm}
+    Ahora debemos ver si $I\wedge B \implies E_4$
+
+	\vspace{0.3cm}
+	Queremos ver que $I\wedge B \implies (0 \leq i \leq |escPres|) \quad \yLuego \quad
+	(0 \leq i \leq |escSen|) \quad \yLuego \quad
+	(0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+    
+	\vspace{0.3cm}
+	$I\wedge B \implies (0 \leq i \leq |escPres| \wedge 0 \leq i \leq |escSen| \wedge 0 \leq i \leq |escDip|) \quad \yLuego \quad
+	\newline
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+
+	\vspace{0.3cm}
+	Como habiamos visto antes I tenia la forma:
+
+	$I \quad \equiv \quad 0 \leq i \leq |escPres| 
+	\wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres = \sum_{j=0}^{i - 1} escPres[j]
+    \wedge votosSen =  \sum_{j=0}^{i - 1} escSen[j]
+    \wedge votosDip =  \sum_{j=0}^{i - 1} escDip[j]$
+
+	\vspace{0.3cm}
+	Vemos entonces que 
+
+	$ I \implies (0 \leq i \leq |escPres| \wedge 0 \leq i \leq |escSen| \wedge 0 \leq i \leq |escDip|)$
+
+	\vspace{0.6cm}
+	Con esto $E_4$ nos quedaria:
+
+	\vspace{0.3cm}
+	$I\wedge B \implies 
+	(0 \leq i+1 \leq |escPres|
+    \wedge |escPres| = |escSen|
+    \wedge |escSen| = |escDip|
+	\newline
+    \wedge votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] =  \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] =  \sum_{j=0}^{i} escDip[j])
+	$
+
+	\vspace{0.6cm}
+	Vemos entonces que 
+
+	$ I \implies (|escPres| = |escSen| \wedge |escSen| = |escDip|)$
+
+	\vspace{0.3cm}
+	Con esto $E_4$ nos quedaria:
+
+	\vspace{0.3cm}
+	$I\wedge B  \implies 
+	(0 \leq i+1 \leq |escPres|
+	\newline
+    \wedge votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] = \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] = \sum_{j=0}^{i} escDip[j])
+	$
+
+	\vspace{0.6cm}
+	Vemos entonces que 
+
+	$ I \wedge B \equiv I \wedge (i < |escPres|) \implies 0 \leq i < |escPres| \implies (0 \leq i \wedge i + 1 \leq |escPres|) \implies 0 \leq i + 1 \leq |escPres|$
+
+	\vspace{0.3cm}
+	Con esto $E_4$ nos quedaria:
+
+	\vspace{0.3cm}
+	$I \wedge B  \implies 
+	(votosPres + escPres[i] = \sum_{j=0}^{i} escPres[j]
+    \wedge votosSen + escSen[i] = \sum_{j=0}^{i} escSen[j]
+    \wedge votosDip + escDip[i] = \sum_{j=0}^{i} escDip[j])
+	$
+
+	\vspace{0.6cm}
+	Vemos entonces que podemos reemplazar las variables votos usando su valor en el invariante
+
+	$ I \implies votosPres = \sum_{j=0}^{i - 1} escPres[j]$
+
+	$ I \implies votosSen = \sum_{j=0}^{i - 1} escSen[j]$
+
+	$ I \implies votosDip = \sum_{j=0}^{i - 1} escDip[j]$
+
+	\vspace{0.3cm}
+	Con esto $E_4$ nos quedaria:
+
+	\vspace{0.3cm}
+	$I \wedge B  \implies 
+	\newline
+	(\sum_{j=0}^{i - 1} escPres[j] + escPres[i] = \sum_{j=0}^{i} escPres[j]
+	\newline
+    \wedge \sum_{j=0}^{i - 1} escSen[j] + escSen[i] = \sum_{j=0}^{i} escSen[j]
+	\newline
+    \wedge \sum_{j=0}^{i - 1} escDip[j] + escDip[i] = \sum_{j=0}^{i} escDip[j])
+	$
+
+	\vspace{0.3cm}
+	Y asi demostramos que $I\wedge B \implies E_4$
+	Y con demostramos que 
+
+	$ I \wedge B \implies wp(Sc, I) \quad \equiv wp(s6;s7;s8;s9, I)\quad \equiv \quad wp(s6, wp(s7, wp(s8, wp(s9, I))))$
+	
+	$ \equiv \{I \wedge B\}  Sc  \{I\}$
+
+
+
+
+
+\vspace{1.2cm}
+$ \{I \wedge B\ \wedge v_0 = f_v\}  Sc  \{f_v < v_0\}$
+
+\vspace{0.3cm}
+Llamamos $f_v \equiv |escPres| - i$
+	
+		
+\vspace{0.3cm}
+Queremos ver que:
+		
+$ \{I \wedge B\ \wedge v_0 = f_v\}  Sc  \{f_v < v_0\}$
+
+\vspace{0.3cm}
+Para eso veamos $wp(s6;s7;s8;s9, f_v < v_0)$
+
+\vspace{0.3cm}
+Llamamos $E_1 \equiv wp(s9, fv < v_0) \equiv def(i + 1) \yLuego (f_v < v_0)^{i}_{i+1}$
+
+$\equiv True \yLuego (|escPres| - i < v_0 )^{i}_{i+1} \equiv |escPres| - i - 1 < v_0$
+
+\vspace{0.3cm}
+Como la unica instrucción que modifica $i$ es la s9, dejamos la wp asi y le agregamos $0 \leq i < |escPres|$
+
+\vspace{0.3cm}
+    Ahora debemos ver si $I \wedge B \wedge fv = v_0 \implies wp(S, fv > v_0) \equiv |escPres| - i - 1 < v_0$
+
+	\vspace{0.3cm}
+    $f_v = v_0 \implies |escPres| - i = v_0 \implies v_0 - 1 < v_0$
+
+	\vspace{0.3cm}
+	Y asi demostramos $ \{I \wedge B\ \wedge v_0 = f_v\}  Sc  \{f_v < v_0\}$
+
+\pagebreak
+
+$(I \wedge fv \leq 0 ) \implies \neg B$
+
+\vspace{0.3cm}
+Veamos que:
+
+\vspace{0.3cm}
+$|esPres| - i \leq 0 \implies \neg B$
+
+$|esPres| - i \leq 0 \implies \neg (i < |escPres|)$
+
+$|esPres| - i \leq 0 \implies |escPres| \leq i $
+
+$|esPres| \leq i \implies |escPres| \leq i $
+
+\vspace{0.3cm}
+Y asi demostramos $I \wedge fv \leq 0 \implies \neg B$
+
+\vspace{0.6cm}
+    De este modo, demostramos la correctitud del ciclo.
+
+ \vspace{0.6cm}
+     Por último, seguimos con el item 1.
+
+\vspace{0.3cm}
+	Recordando que :
+
+	 $Pc \quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge votosDip = 0 \wedge i=0 \wedge Pre$
+
+\vspace{0.3cm}
+    $wp(S1, Pc) \quad \equiv \quad wp(s1, wp(s2, wp(s3, wp(s4, Pc))))$
+
+\vspace{0.5cm}
+    Llamamos $E_1 \quad \equiv \quad  wp(s4, Pc) \quad \equiv \quad wp(i = 0, Pc) $
+    $\quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge votosDip = 0 \wedge 0=0 \wedge Pre$
+
+    $\quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge votosDip = 0 \wedge Pre$
+
+\vspace{0.5cm}
+    Llamamos $E_2 \quad \equiv \quad wp(s3, E_1) \quad \equiv \quad wp(votosDip = 0, E_1)$
+    $\quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge 0 = 0 \wedge Pre$
+    
+    $\quad \equiv \quad votosPres = 0 \wedge votosSen = 0 \wedge Pre$
+
+\vspace{0.5cm}
+    Llamamos $E_3 \quad \equiv \quad wp(s2, E_2) \quad \equiv \quad wp(votosSen = 0, E_2)$
+    $\quad \equiv \quad votosPres = 0 \wedge 0 = 0 \wedge Pre$
+    
+    $\quad \equiv \quad votosPres = 0 \wedge Pre$
+
+\vspace{0.5cm}
+    Llamamos $E_4 \quad \equiv \quad wp(s1, E_3) \quad \equiv \quad wp(votosPres = 0, E_3)$
+    $\quad \equiv \quad 0 = 0 \wedge Pre$
+
+    $\quad \equiv \quad Pre$
+
+\vspace{0.5cm}
+    Luego, $wp(S1, Pc) \quad \equiv \quad E_4 \quad \equiv \quad Pre$
+
+\vspace{0.5cm}
+    Finalmente, debemos ver si 
+
+	$Pre \implies wp(S_1,P_c) \quad \equiv \quad Pre \implies Pre \quad \equiv \quad True $
+
+	\vspace{0.5cm}
+    Esto sumado al hecho que $Pc \implies wp(S_c,Q_c)$ y $Qc \implies wp(S_2,Post)$ y por el colorario de la monotonia nos da que
+	
+	$\{Pre\}S\{Post\}$ es una tripla valida.
+
+\pagebreak
+
+\subsection{obtenerSenadoresEnProvincia}
+
+\textbf{obtenerSenadoresEnProvincia} tiene la siguiente implementación:
+
+\begin{lstlisting}
+candidato := 0;
+subCandidato := 0;
+if(escrutinio[1] > escrutinio[0]) then
+    candidato := 1;
+else
+    subCandidato := 1;
+endif
+i:=2;
+while (i < |escrutinio| - 1) do
+	if (escrutinio[i] > escrutinio[subCandidato]) then
+		subCandidato := i;
+	else
+		skip;
+	endif
+	if (escrutinio[i] > escrutinio[candidato]) then
+	    subCandidato := candidato;
+	    candidato := i;
+	else
+		skip;
+	endif
+	i := i + 1;
+endwhile
+result := (candidato, subCandidato);
+\end{lstlisting}
+ 
+\vspace{5mm}
+    
+    Usaremos el termino "s" para referirnos al escrutinio con el fin de lograr mayor prolijidad.
+    
+    
+    La precondicion del programa(\textbf{P}) es {\textit{esEscrutinioSenadoresValido(s)}} lo que implica que:
+    
+   \textbf{P}\equiv \{\longitud{s} \geq 3 \wedge \textit{noHayEmpate(s) }\wedge  \textit{todosPositivos(s)}\}
+
+    La \textbf{Pc} que proponemos para el ciclo while es
+    
+    \vspace{5mm}
+    
+    \textbf{Pc} \equiv \{(s[1] > s[0] \wedge candidato = 1 \wedge subCandidato = 0) \lor  (s[1] < s[0] \wedge candidato = 0 \wedge subCandidato = 1) \wedge 
+    
+    i = 2 \wedge \textit{noHayEmpate(s)}\}
+
+    \vspace{5mm}
+
+    Ahora hay que demostrar que \{\textbf{P}\} S \{\textbf{Pc}\}
+
+    \vspace{5mm}
+    
+    wp(s1; s2; s3; s8, Pc) \equiv wp(s1, wp(s2, wp(s3, wp(s8, Pc))))
+    
+    \vspace{5mm}
+    Llamamos $E_1$ a wp(s8, Pc) \equiv wp(i:=2, Pc) \equiv 
+    
+   ($s[1] > s[0]$ \wedge  candidato = 1 \wedge subCandidato = 0) \lor  (s[1] < s[0] \wedge candidato = 0 \wedge subCandidato = 1) \wedge 
+    
+    2 = 2 \wedge \textit{noHayEmpate(s)}
+    
+    \vspace{7mm}
+    
+    $Llamamos\quad E_2\quad a\quad wp(s3, E_1) \equiv wp(if\quad s[1] > s[0]\quad then\quad candidato := 1 \quad else\quad subCandidato :=1, E_1)  \equiv$
+
+\vspace{2mm}
+    
+    \{(($s[1] > s[0]$ \wedge ((s[1] > s[0] \wedge 1 = 1 \wedge subCandidato = 0) \lor  (s[1] < s[0] \wedge 1 = 0 \wedge subCandidato = 1)) \wedge 
+    
+    2 = 2 \wedge \textit{noHayEmpate(s)))} \lor
+    
+    (($s[1] < s[0]$ \wedge ((s[1] > s[0] \wedge candidato = 1 \wedge 1 = 0) \lor  (s[1] < s[0] \wedge candidato = 0 \wedge 1 = 1)) \wedge 
+    
+    2 = 2 \wedge \textit{noHayEmpate(s)))}\} \equiv
+
+    \vspace{2mm}
+
+    \{(($s[1] > s[0]$ \wedge ((s[1] > s[0] \wedge True \wedge subCandidato = 0) \lor  False \wedge True \wedge \textit{noHayEmpate(s)))} \lor
+    
+    ($s[1] < s[0]$ \wedge (False \lor  (s[1] < s[0] \wedge candidato = 0 \wedge True)) \wedge 
+    
+    True \wedge \textit{noHayEmpate(s))}\} \equiv
+
+    \vspace{2mm}
+
+    \{($(s[1] > s[0]$ \wedge subCandidato = 0) \wedge \textit{noHayEmpate(s))} \lor
+    
+    (($s[1] < s[0]$ \wedge candidato = 0 ) \wedge \textit{noHayEmpate(s))}\}
+
+    \vspace{7mm}
+
+    Llamamos $E_3$ a wp(s2, $E_2$) \equiv wp((subCandidato := 0, $E_2$) \equiv
+
+    \vspace{2mm}
+
+    \{($(s[1] > s[0]$ \wedge 0 = 0) \wedge \textit{noHayEmpate(s))} \lor
+    
+    (($s[1] < s[0]$ \wedge candidato = 0 ) \wedge \textit{noHayEmpate(s))}\}
+    
+    \pagebreak
+
+    Llamamos $E_4$ a wp(s1, $E_3$) \equiv wp(\{(candidato := 0, $E_3$\}) \equiv
+
+    \vspace{2mm}
+
+    \{($(s[1] > s[0]$ \wedge 0 = 0) \wedge \textit{noHayEmpate(s))} \lor
+    
+    (($s[1] < s[0]$ \wedge 0 = 0 ) \wedge \textit{noHayEmpate(s))}\} \equiv
+
+    \vspace{2mm}
+
+    \{($(s[1] > s[0]$ \wedge True) \wedge \textit{noHayEmpate(s))} \lor
+    
+    (($s[1] < s[0]$ \wedge True) \wedge \textit{noHayEmpate(s))}\} \equiv
+
+    \vspace{2mm}
+
+    \{($(s[1] > s[0]$) \wedge \textit{noHayEmpate(s))} \lor
+    
+    (($s[1] < s[0]$) \wedge \textit{noHayEmpate(s))}\} \equiv
+
+    \vspace{2mm}
+
+    \textit{noHayEmpate(s))}\} 
+
+    \vspace{5mm}
+
+    Y como \textbf{P} \implies \textit{noHayEmpate(s)}, $se cumple que$ $\{\textbf{P}\} S \{\textbf{Pc}\}
+
+
+    Ahora proponemos una invariante \textbf{I} para el ciclo:
+
+ \vspace{5mm}
+
+\textbf{I} \equiv |s|-1 \geq i \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i  \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )} 
+
+\vspace{5mm}
+
+Proponemos la postcondición del ciclo(\textbf{Qc})
+
+\vspace{5mm}
+
+ \textbf{Qc} \equiv { esMaximo(s, candidato) \wedge esSegundo(s, subCandidato)} \equiv 
+ 
+ {\paraTodo[unalinea]{j}{\ent}{(0 \leq j \leq |s| - 2 \wedge j \neq candidato) \implicaLuego s[j] < s[candidato]} \wedge 
+ 
+ {\paraTodo[unalinea]{k}{\ent}{(0 \leq k \leq |s| - 2 \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego s[k] < s[subCandidato]}
+
+\vspace{5mm}
+
+Teniendo ya nuestras \textbf{Pc}, \textbf{Qc} y \textbf{I} definidas, empezamos a demostrar la correctitud del ciclo.
+
+\vspace{5mm}
+
+Primero tenemos que demostrar que \textbf{Pc} \implies \textbf{I}
+
+\vspace{5mm}
+
+\textbf{Pc} dice que \textit{noHayEmpate(s)} lo que impica el \textit{noHayEmpate(s)} en \textbf{I}
+
+\textbf{Pc} dice que i = 2 lo que implica el lsl - 1 \geq i \geq{2}
+
+\vspace{2mm}
+Si i = 2, entonces \paraTodo[unalinea]{j}{\ent}{(0 \leq j < i  \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] }pasaría a ser 
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < 2  \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } 
+
+En este caso, j solo puede valer 0 o 1, pero $j \neq candidato$, por lo que \textbf{Pc} dice que $j = subCandidato$(Ya que Pc muestra
+
+que los valores 0 y 1 son asignados al candidato y subCandidato) y en ese caso s[j] siempre es menor a s[candidato] por 
+
+la definicion ($s[1] > s[0]$ \wedge candidato = 1 \wedge subCandidato = 0) \lor  (s[1] < s[0] \wedge candidato = 0 \wedge subCandidato = 1) 
+
+\vspace{2mm}
+
+Si i = 2, entonces \paraTodo[unalinea]{k}{\ent}{(0 \leq k < i  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato]}
+
+pasaría a ser 
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq k < 2  \wedge k \neq candidato  \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] }
+
+En este caso, k solo puede valer 0 o 1, pero como $k \neq candidato \wedge k \neq subCandidato$ y en \textbf{Pc}, los valores 0 y 1 siempre 
+
+estan asignados ya sea a candidato o subCandidato, la guarda siempre da False, dando el resultado de la implicacion 
+
+como True.
+
+\vspace{5mm}
+
+Por lo que \textbf{Pc} \implies \textbf{I}
+
+\vspace{5mm}
+
+Ahora tenemos que demostrar que \neg\textbf{B} \wedge  \textbf{I} \implies \textbf{Qc}
+
+\vspace{5mm}
+
+\neg\textbf{B} \equiv i \geq |s| - 1
+
+i \geq |s| - 1 \wedge |s|-1 \geq i \geq 2 \equiv i = |s| - 1
+
+\neg\textbf{B} \wedge  \textbf{I} \equiv i = |s| - 1 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i  \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )}
+
+\vspace{5mm}
+
+Si i = lsl - 1 entonces 0 \leq j < i \equiv 0 \leq j < |s| - 1 \equiv 0 \leq j \leq |s| - 2 , $ lo mismo con $ 0 \leq k < i
+
+Por lo que quedaría que 
+
+
+ {\paraTodo[unalinea]{j}{\ent}{(0 \leq j \leq |s| - 2 \wedge j \neq candidato) \implicaLuego s[j] < s[candidato]} \wedge 
+ 
+ {\paraTodo[unalinea]{k}{\ent}{(0 \leq k \leq |s| - 2 \wedge j \neq candidato \wedge k \neq subCandidato) \implicaLuego s[k] < s[subCandidato]}
+
+ Lo cual es \textbf{Qc}
+
+ \vspace{5mm}
+
+ Por lo que confirmamos que \neg\textbf{B} \wedge \textbf{I} \implies \textbf{Qc}
+
+ \vspace{5mm}
+
+Ahora vamos a demostrar que \{\textbf{I} \wedge \textbf{B}\} S \{\textbf{I}\}
+
+ \vspace{5mm}
+ wp(S, I) \equiv wp(s21; s15; s10, I) \equiv wp(s21, wp(s15, wp(s10, I)))
+ 
+ \vspace{5mm}
+ Llamamos Q2 \equiv wp(s10, I) \equiv wp(i:=i+1, I) \equiv lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )} 
+
+ \vspace{5mm}
+
+ $Llamamos \quad Q3 \quad \equiv \quad wp(s15, Q2) \quad \equiv \quad wp(if \quad s[i] > s[candidato] \quad then \quad S \quad else \quad skip, Q2)
+ \equiv$
+ 
+ ($s[i] > s[candidato]$ \wedge wp(S,Q2)) \lor (s[i] \leq s[candidato] \wedge wp(skip, Q2)) \equiv
+
+  ($s[i] > s[candidato]$ \wedge wp(S,Q2)) \lor (s[i] \leq s[candidato] \wedge Q2)
+
+ \vspace{5mm}
+
+wp(candidato := i, Q2) \equiv  lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i]) } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )} 
+
+ \vspace{5mm}
+
+wp(subCandidato := candidato, Q3) \equiv  lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )} 
+
+ \vspace{5mm}
+
+Por lo que me quedaría que
+
+ \vspace{5mm}
+ 
+$Q3 \quad \equiv \quad  wp(if \quad s[i] > s[candidato] \quad then \quad S \quad else \quad skip, Q2)
+ \equiv$
+
+($s[i] > s[candidato]$ \wedge |s|-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )})
+
+ \vspace{5mm}
+
+$Llamamos \quad Q4 \equiv wp(s10, Q3) \equiv wp(if \quad s[i] > s[subCandidato] \quad then \quad S \quad else \quad skip \quad, Q3) \equiv$
+
+($s[i] > s[subCandidato] $ \wedge wp(subCandidato := i, Q3)) \lor 
+(s[i] \leq s[subCandidato]  \wedge wp(skip, Q3)) \equiv
+
+ \vspace{5mm}
+
+ ($s[i] > s[subCandidato]$ \wedge ((s[i] > s[candidato] \wedge lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq i) \implicaLuego ( s[k]  <  s[i] )})))) \lor 
+
+(s[i] \leq s[i]  \wedge ((s[i] > s[candidato] \wedge lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 \wedge  \textit{noHayEmpate(s)} \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )})))) 
+
+ \vspace{5mm}
+
+ Ahora habría que verificar que \textbf{I} \wedge \textbf{B}
+
+ \vspace{5mm}
+
+\textbf{I} dice que \textit{noHayEmpate(s)} lo que implica el \textit{noHayEmpate(s)} en \textbf{Q4} por lo que vamos a reescribirlo:
+
+ \vspace{5mm}
+
+  ($s[i] > s[subCandidato]$ \wedge (s[i] > s[candidato] \wedge lsl-1 \geq i + 1 \geq 2  \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )})) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq i) \implicaLuego ( s[k]  <  s[i] )})) \lor 
+
+(s[i] \leq s[subCandidato]  \wedge ((s[i] > s[candidato] \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )})))) 
+
+\vspace{5mm}
+
+ Primero vamos a verificar la primer parte del OR:
+
+ \vspace{5mm}
+
+  ($s[i] > s[subCandidato]$ \wedge  
+  
+  ($s[i] > s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2  \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )})) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq i) \implicaLuego ( s[k]  <  s[i] )}))
+
+
+ \vspace{5mm}
+
+\textbf{B} \wedge \textbf{I}$ dice $ i < |s|-1 \wedge |s|-1 \geq i \geq 2 \equiv |s|-1 > i \geq 2 
+
+$|s|-1 > i$ \geq 2 \implies |s|-1 \geq i + 1 \geq 2
+
+ \vspace{5mm}
+
+ Ahora tenemos que contemplar el caso en el que $s[i] > s[candidato]$ y en el que s[i] \leq s[candidato]
+
+  \vspace{5mm}
+
+ - $s[i] > s[candidato]$:
+
+  \vspace{5mm}
+
+\textbf{I} me implica de forma directa \paraTodo[unalinea]{k}{\ent}{(0 \leq k < i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )})
+
+Con esto se que s de todo numero entre 0 y i-1 es menor a  candidato, y tambien se que s[i] \geq s[candidato],$ por lo que 
+
+cualquier s entre 0 y i-1 va a ser menor a s[i], lo que
+confirma $\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i ) \implicaLuego ( s[j]  <  s[i] }
+
+Asi que solo me quedaría probar los casos en que j=i y k=i, pero en las guardas se especifica que aparte de estar en rango, 
+
+j \neq i $ y $ k \neq i $ por lo que las guardas darían False, dando las implacaciones True.$
+
+  \vspace{5mm}
+
+ s[i] \leq s[candidato]
+
+  \vspace{5mm}
+
+Dada la definición de \textbf{I} si s[i] \leq s[candidato] \wedge s[i] > s[subCandidato] $ solo puede ser posible si $ i = candidato
+
+\vspace{5mm}
+
+En el caso de \paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] }, \textbf{I} ya define todos los casos de j desde 0 
+
+hasta i-1 incluido, por lo que faltaría verificar j=i, pero al i = candidato y j \neq candiato, 
+
+la guarda da False, haciendo que la implicaion valga True.
+
+
+  \vspace{5mm}
+
+Para la guarda de k, si reemplazamos i por candidato, nos quedaría 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}
+
+Bajo la misma logica que antes, \textbf{I} define todos los casos de k excepto de k=i, en el cual habría una contradicción con
+
+k \neq candidato.$ dando asi la guarda False y la implicación True.$
+  
+\vspace{5mm}
+
+Ahora verifiquemos la otra parte del OR:
+
+\vspace{5mm}
+
+(s[i] \leq s[subCandidato]  \wedge (s[i] > s[candidato] \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq i) \implicaLuego ( s[j]  <  s[i] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq i \wedge k \neq candidato) \implicaLuego ( s[k]  <  s[candidato] )}) \lor
+
+($s[i] \leq s[candidato]$ \wedge lsl-1 \geq i + 1 \geq 2 } \wedge
+
+
+\paraTodo[unalinea]{j}{\ent}{(0 \leq j < i + 1 \wedge j \neq candidato) \implicaLuego ( s[j]  <  s[candidato] } \wedge 
+
+\paraTodo[unalinea]{k}{\ent}{(0 \leq k < i + 1  \wedge k \neq candidato \wedge k \neq subCandidato) \implicaLuego ( s[k]  <  s[subCandidato] )})))) 
+
+\vspace{5mm}
+
+Ya implicamos el \textit{noHayEmpate(s)} y lsl-1 \geq i + 1 \geq 2$ anteriormente $
+
+\vspace{5mm} 
+
+ Otra vez tenemos que contemplar el caso en el que $s[i] > s[candidato]$ y en el que s[i] \leq s[candidato]
+
+
+  \vspace{5mm}
+
+ - $s[i] > s[candidato]$:
+
+  \vspace{5mm}
+
+\textbf{I} me define que $s[candidato] > s[subCandidato]$, por lo que no puede existir un i 
+
+tal que $s[i] > s[candidato$] \wedge s[i] \leq s[subCandiato]
+
+Por lo que la otra parte del OR debe dar True si o si.
+
+  \vspace{5mm}
+
+ s[i] \leq s[candidato]
+
+  \vspace{5mm}
+
+Dada la definición de \textbf{I} cubre los casos de j y k desde 0 hasta i-1 inclusive(ver que las definiciones de ambos para todo 
+
+son iguales en \textbf{I}), por lo que solo nos quedaría verificar los casos de j=i y k=i.
+
+Por las guardas anteriores ya nos aseguran que s[i] \leq candidato \wedge s[i] \leq subCandidato
+
+Y como se cumple que noHayEmpate(s) por \textbf{I}, las implicaciones dan True.
+
+\vspace{5mm}
+
+Con esto se termina de demostrar que \textbf{I} \wedge \textbf{B} \implies Q4$ y se verifica $\{\textbf{I} \wedge \textbf{B}\} S \{\textbf{I}\}
+
+\vspace{5mm} 
+
+Ahora toca demostrar que el ciclo termina, para esto proponemos una funcion variante \textbf{fv} = $|s|-i-1$
+
+\vspace{5mm} 
+
+Primero verificamos que \textbf{I} \wedge \textbf{fv} \leq 0 \implies \neg \textbf{B}
+
+\vspace{5mm} 
+
+\textbf{I} \wedge |s| - i - 1 \leq 0 \implies i \geq |s| - 1 
+
+$|s|$ - i - 1 \leq 0 \equiv |s| - 1 \leq i
+
+Por lo que la implicacion se cumple
+
+\vspace{5mm} 
+
+Por ultimo hay que verificar que \{\textbf{I} \wedge \textbf{B} \wedge v0 = |s| - i - 1\} S \{|s| - i - 1 < v0\}
+
+\vspace{5mm} 
+
+wp(i:=i+1, $|s| - i - 1 < v0$) = $|s| - i - 2  < v0$
+
+\vspace{5mm} 
+
+wp(if $s[i] > s[candidato]$ Then S else skip, $|s| - i - 1 < v0) = 
+
+($s[i] > s[candidato]$ \wedge wp(S, |s| - i - 2  < v0)) \lor (\wedge s[i] \leq s[candidato] \wedge  |s| - i - 2 < v0)
+
+\vspace{5mm} 
+
+wp(candidato:=i, $|s| - i - 2 < v0$) = $|s| - i - 2 < v0$
+
+wp(subCandidato:=candidato, $|s| - i - 2 < v0$) = $|s| - i - 2 < v0$
+
+\vspace{5mm} 
+
+Por lo que quedaría:
+
+($s[i] > s[candidato]$ \wedge |s| - i - 2  < v0) \lor (s[i] \leq s[candidato] \wedge  |s| - i - 2 < v0) \equiv
+
+($s[i] > s[candidato]$ \lor (s[i] \leq s[candidato])) \wedge |s| - i - 2  < v0 \equiv
+
+$|s| - i - 2  < v0$
+
+\vspace{5mm} 
+
+wp(if $s[i] > s[subCandidato]$ Then S else skip, $|s| - i - 1 < v0) = 
+
+($s[i] > s[subCandidato]$ \wedge wp(S, |s| - i - 2  < v0)) \lor (\wedge s[i] \leq s[candidato] \wedge  |s| - i - 2 < v0)
+
+\vspace{5mm} 
+
+wp(subCandidato:=i, $|s| - i - 2 < v0$) = $|s| - i - 2 < v0$
+
+\vspace{5mm} 
+
+Por lo que quedaría:
+
+($s[i] > s[subCandidato]$ \wedge |s| - i - 2  < v0) \lor (s[i] \leq s[subCandidato] \wedge  |s| - i - 2 < v0) \equiv
+
+($s[i] > s[subCandidato]$ \lor (s[i] \leq s[subCandidato])) \wedge |s| - i - 2  < v0 \equiv
+
+$|s| - i - 2  < v0$
+
+\vspace{5mm} 
+
+Si $v0 = |s| - i - 1$ entonces esto implica que $|s| - i - 2  < v0$ verificando asi la tripla \{\textbf{I} \wedge \textbf{B} \wedge v0 = |s| - i - 1\} S \{|s| - i - 1 < v0\}
+
+\vspace{5mm} 
+
+Con esto ya verificamos que el ciclo es correcto y termina, dandonos
+
+\textbf{Qc} \equiv { esMaximo(s, candidato) \wedge esSegundo(s, subCandidato)} 
+
+Ahora solo quedaría verificar \{\textbf{Qc}\} S \{\textbf{Q}\} y terminaríamos la verificacion del programa.
+
+\vspace{5mm}
+
+\textbf{Q} \equiv { esMaximo(s, res_{0}) \wedge esSegundo(s, res_{1})}
+
+\{\textbf{Qc}\} res := (candidato, subCandidato) \{\textbf{Q}\}
+
+\vspace{5mm}
+
+wp(res := (candidato, subCandidato), Q) \equiv { esMaximo(s, candidato) \wedge esSegundo(s, subCandidato)}  \equiv \textbf{Qc}
+
+\vspace{5mm}
+
+Con este ultimo paso completado, queda demostrado que el codigo es correcto en base a la especificación dada.}
+\end{document}
+
+

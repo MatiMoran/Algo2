@@ -1,0 +1,114 @@
+Simulacro de parcial
+
+E1. Complejidad
+
+AlgoritmoExótico(A: arreglo de int, R: arreglo de tupla<val: int, reps: int>) {
+	n := long(A).   						// O()
+	R[0] := <A[0],1> 						// O()
+	r := 0								// O()
+	i := 1								// O()
+	res := 0								// O()
+	
+	while (i < n) {						// O()
+        if A[i] == R[r].val {				// O()
+            R[r] := <R[r].val, R[r].reps + 1>	// O()
+        } else {							// O()
+            j := 1							// O()
+            
+            while (j <= R[r].reps) {			// O()
+                res := res + R[r].val * j 	// O()    	
+                j := j + 1					// O()
+            }
+
+            r := r + 1						// O()	
+            R[r] := <A[i], 1>				// O()
+        }
+        i := i + 1							// O()
+	}
+	
+	return res 							// O()	
+}
+
+a) Complejidad del peor caso
+b) Complejidad del mejor caso
+
+E2. Rep y abs
+
+Considerar la siguiente especificación del show de TV de lucha libre llamado "99% Lucha". Como en todos estos shows, hay luchadores del bando de los "buenos" y de los "malos". Los luchadores se pueden sumar en cualquier momento al show, pero no se van nunca. Así, se registran todas las luchas uno contra uno que ocurren a lo largo del programa.
+
+TAD 99%Lucha
+
+obs buenos: 	conj(int)
+obs malos: 	conj(int)
+
+obs cantLuchas: dict(tupla(b: int, m: int), nat)
+or
+obs cantLuchas: func (b: int, m: int): nat
+
+Módulo
+
+Modulo 99%LuchaImpl implementa 99%Lucha {
+	var buenos:			Conjunto(nat), 
+	var malos:			Conjunto(nat), 
+	var contrincantes:		Diccionario(nat, Conjunto(nat)), 
+	var históricoLuchas:	Vector(Tupla< b: nat, m: nat >)
+}
+
+donde buenos y malos representan los conjuntos de identificadores de los luchadores buenos y malos, respectivamente, contrincantes asocia a cada luchador (tanto bueno como malo) con el conjunto de todos los contrincantes que tuvo al menos una vez y, por último, históricoLuchas tiene la secuencia de contrincantes (bueno, malo) que se enfrentaron, en el orden en que las luchas ocurrieron en el show.
+
+a) Escribir coloquialmente el invariante de representación
+b) Escribir formalmente el invariante de representación
+c) Escribir formalmente la función de abstracción
+
+E3. Sorting
+
+Se quiere obtener los resultados de una competencia de escalada. Así, el resultado de cada competidor se registrará como una tupla(nombre: string, puntos: nat, intentos: nat), donde nombre es el nombre del competidor, puntos es la cantidad de puntos acumulados e intentos es la cantidad de veces que el competidor intentó escalar una ruta. El puntaje obtenido variará según la competencia, por lo que no existe un máximo establecido, y cada competidor puede realizar la cantidad de intentos que quiera. 
+
+Se requiere crear un algoritmo para hacer un ranking de los competidores:
+
+TablaKPosiciones(in a: secuencia(tupla(nombre:string, puntos:nat, intentos:nat)), in k: nat): secuencia(string)
+
+Por ejemplo, dada la siguiente entrada:
+
+R=[(Marcos, 25, 5), (Pedro, 50, 2), (Irene, 50, 2), (Lucas, 10, 10), (Juana, 25, 2)]
+
+TablaKPosiciones(R, 3) = [Pedro, Irene, Juana]
+
+Esto es porque al solicitar el ranking de tres (3) posiciones Pedro e Irene quedan primeros ya que tienen el mayor puntaje. Después vienen Marcos y Juana, que tienen el mismo puntaje, pero Juana tiene menos intentos y queda antes, y Marcos se queda fuera.
+
+Se pide escribir un algoritmo que tome el arreglo de resultados de una competencia de escalada, de tamaño n, y arme la tabla de posiciones con el top k de los mejores competidores TablaDeKPosiciones. La tabla de posiciones es una lista donde los competidores aparecen ordenados decrecientemente según el puntaje obtenido. En caso de empate, se desempata según la cantidad de intentos realizados de forma creciente. El algoritmo debe ser estable y tener complejidad O(n + k \log(n)) de peor caso, lo que debe estar justificado en forma detallada.
+
+E4. Elección de estructuras
+
+Quiero hacer un sistema para registrar las notas de los alumnos en una facultad.
+
+Los alumnos se identifican con LU. Las LU tienen un número (secuencial, menor que 10000) y un año (LU 192/95). 
+
+Las materias tienen un nombre, pero por simplicidad las identificamos con un número. Puede haber una cantidad no acotada de materias. 
+
+Las notas están entre 0 y 10. Aprueban si la nota es mayor a 7.
+
+Se pide elegir la estructura que permita cumplir con los siguientes requisitos de complejidad, sabiendo que m es la cantidad de materias:
+
+- RegistrarMateria(inout s: Sistema, in m: materia)
+	Complejidad: O(log m)
+- RegistrarNota(inout s: Sistema, in m: materia, in a: alumno, in n: nota)
+	Complejidad: O(log m)
+- NotaDeAlumno(in s: Sistema, in a: alumno, m: materia): nota
+	Complejidad: O(log m)
+- CantAlumnosConNota(in s: Sistema, in m: materia): nat
+	Complejidad: O(log m)
+- CantAlumnosAprobados(in s: Sistema, in m: materia): nat
+	Complejidad: O(log m)
+
+---
+
+RESOLUCIÓN:
+
+Estructura:
+ ConjuntoAVL<materia, Vector<int>>
+ DiccionarioTrie<alumno, DiccionarioAVL<materia, nota>>
+
+Observaciones:
+- Guardo las notas de un alumno en un diccionario de trie. Las agrego al final
+- Para cada materia tengo un array de 10 posiciones donde cuento cuántos alumnos se sacaron esa nota. Al registrar una nota sumo uno

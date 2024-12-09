@@ -1,0 +1,24 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------------< aed:labo5 >------------------------------
+[INFO] Building labo4 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.10:prepare-agent (jacoco-initialize) @ labo5 ---
+[INFO] argLine set to -javaagent:/home/sdandois/.m2/repository/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=/tmp/tmp6gbyg9kv/target/jacoco.exec
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ labo5 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /tmp/tmp6gbyg9kv/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ labo5 ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 6 source files to /tmp/tmp6gbyg9kv/target/classes
+[WARNING] /tmp/tmp6gbyg9kv/src/main/java/aed/InternetToolkit.java: /tmp/tmp6gbyg9kv/src/main/java/aed/InternetToolkit.java uses unchecked or unsafe operations.
+[WARNING] /tmp/tmp6gbyg9kv/src/main/java/aed/InternetToolkit.java: Recompile with -Xlint:unchecked for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.365 s
+[INFO] Finished at: 2023-12-01T20:31:54-03:00
+[INFO] ------------------------------------------------------------------------

@@ -1,0 +1,126 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------------< aed:labo5 >------------------------------
+[INFO] Building labo4 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.10:prepare-agent (jacoco-initialize) @ labo5 ---
+[INFO] argLine set to -javaagent:/home/sdandois/.m2/repository/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=/tmp/tmpmwkldet4/target/jacoco.exec
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ labo5 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /tmp/tmpmwkldet4/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ labo5 ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ labo5 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /tmp/tmpmwkldet4/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ labo5 ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /tmp/tmpmwkldet4/target/test-classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[50,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[50,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[70,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[70,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[85,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[85,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[101,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[101,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[131,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[131,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[164,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[164,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[188,9] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[188,44] cannot find symbol
+  symbol:   class InternetToolkit
+  location: class aed.InternetToolkitTests
+[INFO] 14 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.598 s
+[INFO] Finished at: 2023-11-30T12:27:28-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project labo5: Compilation failure: Compilation failure: 
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[50,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[50,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[70,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[70,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[85,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[85,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[101,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[101,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[131,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[131,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[164,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[164,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[188,9] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] /tmp/tmpmwkldet4/src/test/java/aed/InternetToolkitTests.java:[188,44] cannot find symbol
+[ERROR]   symbol:   class InternetToolkit
+[ERROR]   location: class aed.InternetToolkitTests
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
